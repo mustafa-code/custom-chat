@@ -11,7 +11,8 @@ class EmbedCollection extends Model
 {
     use HasFactory;
 
-    public $fillable = ['name', 'meta_data'];
+    public $fillable = ['name', 'meta_data', 'tag'];
+    protected $jsonable = ["meta_data"];
     public $incrementing = false;
     public $keyType = "string";
 

@@ -16,7 +16,10 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Chat::class)->onDelete('cascade');
             $table->string("role");
-            $table->text("content");
+            $table->text("content")->nullable();
+            $table->string("name")->nullable();
+            $table->json("function_call")->nullable();
+            $table->json("embeddings_ids")->nullable();
             $table->timestamps();
         });
     }

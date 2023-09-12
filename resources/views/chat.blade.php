@@ -33,11 +33,11 @@
                             @foreach($chats as $chat)
                             <div class="pb-6">
                                 <p class="text-gray-600 text-sm">
-                                    {{$chat->embed_collection->created_at->diffForHumans()}}
+                                    {{$chat->created_at->diffForHumans()}}
                                 </p>
                                 <p class="text-gray-800 font-medium">
                                     <a class="hover:underline" href="{{route('chat.show', $chat->id)}}">
-                                        {{$chat->embed_collection->name}}
+                                        {{$chat->messages[0]->id}}
                                     </a>
                                 </p>
                             </div>

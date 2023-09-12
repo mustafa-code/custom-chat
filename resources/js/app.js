@@ -131,6 +131,7 @@ function handleSubmitQuestion(form) {
         const answerComponent = document.getElementById(answerComponentId);
         answerComponent.innerHTML = components.thinking;
 
+        messages.scrollTop = messages.scrollHeight;
         if (!question) return;
         const body = { question, chat_id };
         fetch("/chat", {
@@ -156,6 +157,8 @@ function handleSubmitQuestion(form) {
                 }
 
                 btn.innerHTML = `Submit`;
+                const messages = document.getElementById("messages")
+                messages.scrollTop = messages.scrollHeight;
             })
             .catch((e) => {
                 console.error(e);

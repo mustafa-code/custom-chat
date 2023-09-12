@@ -9,6 +9,7 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-P50sG3Aznjr6PJg3qjGk4O9KXLJvKxFtuoPh6Q7oUARLl1mX2Kcb2FA5tgm1PyDDl2UzOM4Ytivfp5C67FshGGw==" crossorigin="anonymous" />
     <!-- <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" /> -->
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
@@ -23,8 +24,8 @@
                     <a href="/chat" class="font-semibold text-[#4354ff] text-sm uppercase">Chat Index</a>
                 </p>
                 <div class="p-2 pb-6 max-w-lg mx-auto">
-                    <p class="text-lg"><span class="text-gray-800 font-medium">{{$embed_collection->name}}</span></p>
-                    <p class="truncate"><a href="{{$embed_collection->meta_data->url}}" class="text-blue-500">{{$embed_collection->meta_data->url}}</a></p>
+                    <p class="text-lg"><span class="text-gray-800 font-medium">{{$chat->title}}</span></p>
+                    <p class="truncate"><a href="{{$chat->id}}" class="text-blue-500">{{$chat->id}}</a></p>
                 </div>
             </div>
             <div class="max-w-lg mx-auto mt-4">
@@ -41,10 +42,15 @@
                                 </di>
                             </div>
                             @else
-                            <div class="bg-gray-100 p-2 rounded-md mr-16">
-                                <p class="font-medium text-blue-500 text-sm">Answer</p>
-                                <hr class="my-2" />
-                                <p class="text-gray-800">{{$message->content}}</p>
+                            <div style="display: flex;align-items: center;">
+                                <div class="bg-gray-100 p-2 rounded-md" style="width: 75%;">
+                                    <p class="font-medium text-blue-500 text-sm">Answer</p>
+                                    <hr class="my-2" />
+                                    <p class="text-gray-800">{{$message->content}}</p>
+                                </div>
+                                <span style="margin: 0 12px;">
+                                    <a href=""><i class="fa-solid fa-thumbs-down"></i></a>
+                                </span>
                             </div>
                             @endif
                             @endforeach

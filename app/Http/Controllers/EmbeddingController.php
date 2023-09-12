@@ -29,7 +29,8 @@ class EmbeddingController extends Controller
     public function store(Request $request)
     {
         $url = $request->link;
-        return response()->stream(function () use ($url) {
+        $tag = $request->tag ?: "no-tag";
+        return response()->stream(function () use ($url, $tag) {
             try {
                 ServerEvent::send("Start crawling: {$url}");
                 $markdown = $this->scraper->handle($url);
@@ -40,6 +41,7 @@ class EmbeddingController extends Controller
                 $total = 0;
                 $collection = EmbedCollection::create([
                     'name' => $title,
+                    'tag' => $tag,
                     'meta_data' => json_encode([
                         'title' => $title,
                         'url' => $url,
@@ -62,7 +64,7 @@ class EmbeddingController extends Controller
                     }
                 }
                 sleep(1);
-                $chat = Chat::create(['embed_collection_id' => $collection->id]);
+                $chat = Chat::create([]);
                 ServerEvent::send(route("chat.show", $chat->id));
             } catch (Exception $e) {
                 Log::error($e);

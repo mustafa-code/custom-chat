@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->uuid("id")->primary();
-            $table->foreignIdFor(EmbedCollection::class)->onDelete('cascade');
+            // $table->foreignIdFor(EmbedCollection::class)->onDelete('cascade');
             $table->string("title")->nullable();
             $table->timestamps();
         });

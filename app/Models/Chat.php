@@ -4,14 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Ramsey\Uuid\Uuid;
 
 class Chat extends Model
 {
     use HasFactory;
 
-    public $fillable = ['embed_collection_id', 'title'];
+    public $fillable = ['title'];
     public $incrementing = false;
 
     protected static function booted()
@@ -21,8 +21,9 @@ class Chat extends Model
         });
     }
 
-    public function embed_collection(): BelongsTo
+    public function messages(): HasMany
     {
-        return $this->belongsTo(EmbedCollection::class);
+        return $this->hasMany(Message::class);
     }
+
 }
