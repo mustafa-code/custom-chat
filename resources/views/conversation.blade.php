@@ -24,7 +24,7 @@
                 </p>
                 <div class="p-2 pb-6 max-w-lg mx-auto">
                     <p class="text-lg"><span class="text-gray-800 font-medium">{{$chat->title}}</span></p>
-                    <p class="truncate"><a href="{{$chat->id}}" class="text-blue-500">{{$chat->id}}</a></p>
+                    <p class="truncate"><a href="{{$chat->id}}" class="text-blue-500">{{$chat->id}}</a> : {{ $chat->duration() }}</p>
                 </div>
             </div>
             <div class="max-w-lg mx-auto mt-4">

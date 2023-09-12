@@ -28,9 +28,8 @@ class Chat extends Model
 
     public function duration(){
         $first_message = $this->messages()->first();
-        $last_message = $this->messages()->latest();
+        $last_message = $this->messages()->orderBy("id", "DESC")->first();
 
-        $first_message->created_at;
-        $last_message->created_at;
+        return $first_message->created_at->diffForHumans($last_message->created_at);
     }
 }
