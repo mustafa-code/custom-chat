@@ -9,7 +9,6 @@
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-P50sG3Aznjr6PJg3qjGk4O9KXLJvKxFtuoPh6Q7oUARLl1mX2Kcb2FA5tgm1PyDDl2UzOM4Ytivfp5C67FshGGw==" crossorigin="anonymous" />
     <!-- <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" /> -->
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
@@ -21,7 +20,7 @@
         <div class="relative items-center w-full px-5 mx-auto max-w-7xl md:px-12">
             <div class="text-center">
                 <p class="w-auto">
-                    <a href="/chat" class="font-semibold text-[#4354ff] text-sm uppercase">Chat Index</a>
+                    <a href="/chat" class="font-semibold text-[#4354ff] text-sm">New Conversation</a>
                 </p>
                 <div class="p-2 pb-6 max-w-lg mx-auto">
                     <p class="text-lg"><span class="text-gray-800 font-medium">{{$chat->title}}</span></p>
@@ -48,9 +47,17 @@
                                     <hr class="my-2" />
                                     <p class="text-gray-800">{{$message->content}}</p>
                                 </div>
-                                <span style="margin: 0 12px;">
-                                    <a href=""><i class="fa-solid fa-thumbs-down"></i></a>
-                                </span>
+                                @if (!$message->report)
+                                    <span style="margin: 0 12px;">
+                                        <a class="vote" href="{{ route("chat.report", $message->id) }}" >
+                                            <img src="https://cdn-icons-png.flaticon.com/128/2107/2107671.png" class="up_down vote" style="width: 32px;height: 32px;" alt="Down Vote">
+                                        </a>
+                                    </span>
+                                @else
+                                    <span style="margin: 0 12px;">
+                                        Reported!
+                                    </span>
+                                @endif
                             </div>
                             @endif
                             @endforeach

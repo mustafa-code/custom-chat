@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\AiFunctionsCall;
 use App\Helpers\ServerEvent;
 use App\Models\Chat;
+use App\Models\ChatReport;
 use App\Models\Message;
 use App\Service\QueryEmbedding;
 use Exception;
@@ -27,6 +29,16 @@ class MessageController extends Controller
         return redirect()->route("chat.show", $chat->id);
     }
 
+    public function report($id){
+        $message = Message::find($id);
+        if($message){
+            ChatReport::create([
+                "message_id" => $message->id,
+            ]);
+        }
+        return redirect()->back();
+    }
+
     public function show($id)
     {
         $chat = Chat::find($id);
@@ -34,8 +46,9 @@ class MessageController extends Controller
             return redirect()->route("chat.index");
         }
         $messages = $chat->messages()
+        ->with("report")
         ->whereIn("role", [Message::ROLE_BOT, Message::ROLE_USER])
-        ->whereNotNull("content")
+        ->whereNotNull("content")->whereNull("function_call")
         ->get();
         return view('conversation', [
             'chat' => $chat,
@@ -79,7 +92,7 @@ class MessageController extends Controller
     }
 
     private function doChat($chat_id, $context, $question, $messages, $embeddings_ids, $function = null){
-        $response = $this->query->askQuestion($context, $question, $messages, $function);
+        $response = $this->query->askQuestion($chat_id, $context, $question, $messages, $function);
         $messageResponse = $response['choices'][0]['message'];
 
         $resultText = $messageResponse["content"];
@@ -130,15 +143,8 @@ class MessageController extends Controller
         if (isset($completions['choices'][0]['message']['function_call'])) {
             $functionCall = $completions['choices'][0]['message']['function_call'];
             $functionName = $functionCall['name'];
-            return $this->$functionName(...json_decode($functionCall['arguments'], true));
+            return AiFunctionsCall::$functionName(json_decode($functionCall['arguments'], true));
         }
         return null;
-    }
-
-    private function sayHello($name){
-        return json_encode([
-            "status" => true,
-            "message" => "Hello $name, enjoy our AI Model"
-        ]);
     }
 }

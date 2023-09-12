@@ -26,4 +26,11 @@ class Chat extends Model
         return $this->hasMany(Message::class);
     }
 
+    public function duration(){
+        $first_message = $this->messages()->first();
+        $last_message = $this->messages()->latest();
+
+        $first_message->created_at;
+        $last_message->created_at;
+    }
 }

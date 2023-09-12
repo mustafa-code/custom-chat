@@ -23,21 +23,33 @@ class QueryEmbedding
         return $result['data'][0]['embedding'];
     }
 
-    public function askQuestion($context, $question, $messages, $function = null)
+    public function askQuestion($chat_id, $context, $question, $messages, $function = null)
     {
-        $params = $this->getParams($context, $question, $messages, $function);
+        $params = $this->getParams($chat_id, $context, $question, $messages, $function);
         return OpenAi::chat()->create($params);
     }
 
-    private function getParams($context, $question, $messages, $function = null){
+    private function getParams($chat_id, $context, $question, $messages, $function = null){
         $system_template = "
-        Use the following pieces of context to answer the users question. 
-        If you don't know the answer, just say that you don't know, don't try to make up an answer.
-        when user give you his name call sayHello function.
-        ----------------
-        {context}
+        Use the following pieces of context to answer user question.
+        You are a student assistant to help students apply to OKTamam System.
+        Never say you are an AI model, always refer to yourself as a students assistant.
+        If you do not know the answer say I will call the manager and get back to you and never made up any answer.
+        Always answer with shortes answer you can, do not say too much words.
+        Never say reach out to the university directly or any other similar sentences, instead ask the manager and he will respond to you.
+        It's important to append student language and chat id, when calling any functions.
+        If the student wants to register you should ask him for some data one by one in separate questions:
+        - First Name
+        - Last Name
+        - Phone
+        - Email Address
+        when the user give you his/her name, email, and phone number and add user language, and call the registerStudent Function.
+
+        Chat Id: '{chat_id}'
+        Context: '{context}'
         ";
         $system_prompt = str_replace("{context}", $context, $system_template);
+        $system_prompt = str_replace("{chat_id}", $chat_id, $system_template);
 
         $messagesArray = [
             ['role' => 'system', 'content' => $system_prompt],
@@ -67,20 +79,45 @@ class QueryEmbedding
             'model' => 'gpt-3.5-turbo',
             'temperature' => 0.1,
             'messages' => $messagesArray,
-            "functions" => [
-                [
-                    "name" => "sayHello",
-                    "description" => "Get called when the user write his name",
-                    "parameters" => [
-                        'type' => 'object',
-                        'properties' => [
-                            'name' => [
-                                'type' => 'string',
-                                'description' => 'The user\'s name',
-                            ],
+            "functions" => $this->getFunctionsDef(),
+        ];
+    }
+
+    private function getFunctionsDef(){
+        return [
+            [
+                "name" => "registerStudent",
+                "description" => "Get called when the user provieded lead info",
+                "parameters" => [
+                    "type" => "object",
+                    "properties" => [
+                        "first_name" => [
+                            "type" => "string",
+                            "description" => "The student's first name"
                         ],
-                    ]
-                ],
+                        "last_name" => [
+                            "type" => "string",
+                            "description" => "The student's last name"
+                        ],
+                        "phone" => [
+                            "type" => "string",
+                            "description" => "The student's phone"
+                        ],
+                        "email" => [
+                            "type" => "string",
+                            "description" => "The student's email"
+                        ],
+                        "lang" => [
+                            "type" => "string",
+                            "description" => "The user's conversation language as a lang code like en, ar, or tr"
+                        ],
+                        "chat_id" => [
+                            "type" => "string",
+                            "description" => "The chat id provided in System role."
+                        ],
+                    ],
+                    "required" => ["first_name", "last_name", "phone", "email", "chat_id"]
+                ]
             ]
         ];
     }
