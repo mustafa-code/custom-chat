@@ -132,9 +132,11 @@ class MessageController extends Controller
         }
 
         $reportUrl = route("chat.report", $aiObj->id);
+        $chat = Chat::find($chat_id);
         return [
             "message" => $resultText,
             "report_url" => $reportUrl,
+            "chat_details" => $chat->duration()." -> ".$chat->requestsCount()." Request(s)"
         ];
     }
 

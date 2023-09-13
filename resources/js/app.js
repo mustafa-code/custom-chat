@@ -167,13 +167,13 @@ function handleSubmitQuestion(form) {
                     responseStr = text;//await markdownToHtml(text);
                 }
                 let response = JSON.parse(responseStr);
-                console.log({response})
                 answerComponent.innerHTML = response.message
                 const parentComponent = document.getElementById("parent_"+answerComponentId);
                 if(parentComponent){
                     parentComponent.innerHTML += components.report_tag
                     .replace("{report_url}", response.report_url);
                 }
+                document.getElementById("chat-details").innerHTML = response.chat_details
                 btn.innerHTML = `Submit`;
                 const messages = document.getElementById("messages")
                 messages.scrollTop = messages.scrollHeight;
@@ -189,3 +189,9 @@ if (formSubmitLink) handleSubmitIndexing(formSubmitLink);
 
 const formQuestion = document.getElementById("form-question");
 if (formQuestion) handleSubmitQuestion(formQuestion);
+
+document.addEventListener("DOMContentLoaded", function(event) { 
+    const messages = document.getElementById("messages")
+    messages.scrollTop = messages.scrollHeight;
+});
+  
