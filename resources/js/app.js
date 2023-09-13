@@ -15,11 +15,20 @@ const components = {
         </di>
     </div>`,
     chat_bot: `
-    <div class="bg-gray-100 p-2 rounded-md mr-16">
-        <p class="font-medium text-blue-500 text-sm">Answer</p>
-        <hr class="my-2" />
-        <div class="text-gray-800" id="{id}">{content}</div>
+    <div style="display: flex;align-items: center;" id="parent_{id}">
+        <div class="bg-gray-100 p-2 rounded-md" style="width: 75%;">
+            <p class="font-medium text-blue-500 text-sm">Answer</p>
+            <hr class="my-2" />
+            <div class="text-gray-800" id="{id}">{content}</div>
+        </div>
     </div>`,
+    report_tag: `
+        <span style="margin: 0 12px;">
+            <a href="{report_url}" >
+                <img src="https://cdn-icons-png.flaticon.com/128/2107/2107671.png" style="width: 32px;height: 32px;" alt="Down Vote">
+            </a>
+        </span>
+    `,
 };
 
 function isUrl(string) {
@@ -126,7 +135,8 @@ function handleSubmitQuestion(form) {
         const answerComponentId = getId();
         messages.innerHTML += components.chat_bot
             .replace("{content}", "")
-            .replace("{id}", answerComponentId);
+            .replaceAll("{id}", answerComponentId);
+            // .replace("{report_url}", '{{  }}')
 
         const answerComponent = document.getElementById(answerComponentId);
         answerComponent.innerHTML = components.thinking;
@@ -149,13 +159,21 @@ function handleSubmitQuestion(form) {
                 const decoder = new TextDecoder();
 
                 let text = "";
+                var responseStr = "";
                 while (true) {
                     const { value, done } = await reader.read();
                     if (done) break;
                     text += decoder.decode(value, { stream: true });
-                    answerComponent.innerHTML = await markdownToHtml(text);
+                    responseStr = text;//await markdownToHtml(text);
                 }
-
+                let response = JSON.parse(responseStr);
+                console.log({response})
+                answerComponent.innerHTML = response.message
+                const parentComponent = document.getElementById("parent_"+answerComponentId);
+                if(parentComponent){
+                    parentComponent.innerHTML += components.report_tag
+                    .replace("{report_url}", response.report_url);
+                }
                 btn.innerHTML = `Submit`;
                 const messages = document.getElementById("messages")
                 messages.scrollTop = messages.scrollHeight;

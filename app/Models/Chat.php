@@ -30,6 +30,13 @@ class Chat extends Model
         $first_message = $this->messages()->first();
         $last_message = $this->messages()->orderBy("id", "DESC")->first();
 
-        return $first_message->created_at->diffForHumans($last_message->created_at);
+        if($last_message && $first_message){
+            return $first_message->created_at->diffForHumans($last_message->created_at);
+        }
+        return "00:00";
+    }
+
+    public function requestsCount(){
+        return $this->messages()->where("role", Message::ROLE_BOT)->count();
     }
 }

@@ -78,13 +78,12 @@ class MessageController extends Controller
             $embeddings_ids = collect($result)->map(function ($item) {
                 return $item->id;
             });
-            info($embeddings_ids);
 
             $context = preg_replace('/\n+/', '\n', $context);
 
             $messages = Message::where("chat_id", $chat_id)->get();
-            $resultText = $this->doChat($chat_id, $context, $question, $messages, $embeddings_ids);
-            return response($resultText);
+            $aiResponse = $this->doChat($chat_id, $context, $question, $messages, $embeddings_ids);
+            return response()->json($aiResponse);
         } catch (Exception $e) {
             Log::error($e);
             ServerEvent::send("");
@@ -108,8 +107,6 @@ class MessageController extends Controller
             "function_call" => $functionCall,
             "name" => null,
             "embeddings_ids" => json_encode($embeddings_ids),
-            "created_at" => now(),
-            "updated_at" => now(),
         ];
         $humanMessage = [
             'chat_id' => $chat_id,
@@ -118,8 +115,6 @@ class MessageController extends Controller
             "function_call" => null,
             "embeddings_ids" => null,
             "name" => null,
-            "created_at" => now(),
-            "updated_at" => now(),
         ];
 
         if($function){
@@ -127,7 +122,8 @@ class MessageController extends Controller
             $humanMessage["name"] = $function;
         }
 
-        Message::insert([$humanMessage, $aiMessage]);
+        Message::create($humanMessage);
+        $aiObj = Message::create($aiMessage);
         
         $functionResponse = $this->handleOpenAiFunctionCalls($response);
         if($functionResponse){
@@ -135,7 +131,11 @@ class MessageController extends Controller
             return $this->doChat($chat_id, $context, $functionResponse, $messages, $embeddings_ids, $functionName);
         }
 
-        return $resultText;
+        $reportUrl = route("chat.report", $aiObj->id);
+        return [
+            "message" => $resultText,
+            "report_url" => $reportUrl,
+        ];
     }
 
     private function handleOpenAiFunctionCalls($completions)

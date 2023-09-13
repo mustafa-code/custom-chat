@@ -24,7 +24,7 @@
                 </p>
                 <div class="p-2 pb-6 max-w-lg mx-auto">
                     <p class="text-lg"><span class="text-gray-800 font-medium">{{$chat->title}}</span></p>
-                    <p class="truncate"><a href="{{$chat->id}}" class="text-blue-500">{{$chat->id}}</a> : {{ $chat->duration() }}</p>
+                    <p class="truncate"><a href="{{$chat->id}}" class="text-blue-500">{{$chat->id}}</a><br>{{ $chat->duration() }} -> {{ $chat->requestsCount() }} Request(s)</p>
                 </div>
             </div>
             <div class="max-w-lg mx-auto mt-4">
@@ -49,8 +49,8 @@
                                 </div>
                                 @if (!$message->report)
                                     <span style="margin: 0 12px;">
-                                        <a class="vote" href="{{ route("chat.report", $message->id) }}" >
-                                            <img src="https://cdn-icons-png.flaticon.com/128/2107/2107671.png" class="up_down vote" style="width: 32px;height: 32px;" alt="Down Vote">
+                                        <a href="{{ route("chat.report", $message->id) }}" >
+                                            <img src="https://cdn-icons-png.flaticon.com/128/2107/2107671.png" style="width: 32px;height: 32px;" alt="Down Vote">
                                         </a>
                                     </span>
                                 @else
